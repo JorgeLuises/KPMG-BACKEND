@@ -109,6 +109,17 @@ async function iniciarSesion(req, res) {
     }
 }
 
+// ====== Cerrar sesión del usuario ====== //
+function cerrarSesion(req, res) {
+    try {
+        res.clearCookie('_token');
+        return res.status(200).json({ mensaje: 'Sesión cerrada correctamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: "Hubo un error al cerrar la sesión"});
+    }
+}
+
 // ======= Reestablecer contraseña ====//
 async function resetContraseña(req, res) {
     const { email, password } = req.body;
@@ -163,6 +174,7 @@ function verificacionToken(req, res) {
 export {
     registrarUsuario,
     iniciarSesion,
+    cerrarSesion,
     resetContraseña,
     verificacionToken
 }
