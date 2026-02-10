@@ -1,10 +1,26 @@
 import { check, validationResult } from "express-validator";
 import Empleado from "../models/Empleado.js";
+import { Op, Sequelize } from "sequelize";
+import Departamento from "../models/Departamento.js";
+import Ciudad from "../models/Ciudad.js";
 
 //====== Mostrar todos los empleados ====//
 async function mostrarEmpleados(req, res) {
     try {
-        const empleados = await Empleado.findAll();
+        const empleados = await Empleado.findAll({
+            attributes: {
+                include: [
+                    [Sequelize.col('departamento.departamento'), 'departamento'],
+                    [Sequelize.col('ciudad.nombreCiudad'), 'nombreCiudad']
+                ]
+            },
+            include: [
+                { model: Departamento, attributes: [], required: false },
+                { model: Ciudad, attributes: [], required: false }
+            ],
+            raw: true
+        });
+
         res.status(200).json(empleados);
     } catch (error) {
         console.error(error);
@@ -15,7 +31,7 @@ async function mostrarEmpleados(req, res) {
 //===== Mostrar un empleado ====//
 async function mostrarEmpleado(req, res) {
     const { id } = req.params;
-    
+
     try {
         const empleado = await Empleado.findOne({ where: { idEmpleado: id } });
         if (!empleado) {
@@ -31,7 +47,7 @@ async function mostrarEmpleado(req, res) {
 //===== Agregar empleado ====//
 async function agregarEmpleado(req, res) {
     const { educacion, anioUnion, edad, genero, benched, experiencia, idDepartamento, idCiudad, idPago, nombreEmpleado } = req.body;
-    
+
     try {
         //Validación de campos
         await check('anioUnion')
@@ -77,7 +93,7 @@ async function agregarEmpleado(req, res) {
             idPago,
             nombreEmpleado
         });
-        
+
         res.status(201).json({ mensaje: 'Empleado agregado correctamente' });
     } catch (error) {
         console.error(error);
@@ -156,7 +172,7 @@ async function eliminarEmpleado(req, res) {
         //Busqueda de empleado
         const empleado = await Empleado.findOne({ where: { idEmpleado: id } });
         if (!empleado) {
-            return res.status(404).json({ errores: [{ msg: 'Empleado no encontrado' }] });
+            return res.status(404).json({ mensaje: 'Empleado no encontrado' });
         }
 
         //Eliminación de empleado
@@ -164,7 +180,7 @@ async function eliminarEmpleado(req, res) {
         res.status(200).json({ mensaje: 'Empleado eliminado correctamente' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ errores: [{ msg: 'Error al eliminar el empleado' }] });
+        res.status(500).json({ mensaje: 'Error al eliminar el empleado' });
     }
 }
 

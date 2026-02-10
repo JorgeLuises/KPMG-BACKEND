@@ -5,6 +5,9 @@ import cookieParser from 'cookie-parser';
 import db from './config/db.js';
 import usuarioRoutes from './routes/usuarioRoutes.js';
 import empleadoRoutes from './routes/empleadoRoutes.js';
+import departamentoRoutes from './routes/departamentoRoutes.js';
+import ciudadRoutes from './routes/ciudadRoutes.js';
+import pagoRoutes from './routes/pagoRoutes.js';
 
 const app = express();
 
@@ -32,6 +35,9 @@ app.use(cookieParser());
 //====== Routing ===== //
 app.use('/usuario', usuarioRoutes);
 app.use('/empleados', empleadoRoutes);
+app.use('/departamentos', departamentoRoutes);
+app.use('/ciudades', ciudadRoutes);
+app.use('/pagos', pagoRoutes);
 
 
 const port = process.env.port || 3000;
